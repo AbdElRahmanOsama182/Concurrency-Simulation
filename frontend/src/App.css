@@ -1,0 +1,54 @@
+body {
+    transition: all 0.5s ease-out;
+    
+}
+
+.all {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    gap: 20px;
+}
+.panel {
+    position: absolute;
+    display: grid;
+    z-index: 5;
+    padding: 15px;
+    padding-right: 50px;
+    background: #80808041;
+    gap: 10px;
+    border-radius: 5px;
+    cursor: move;
+    backdrop-filter: blur(5px);
+    grid-auto-flow: column;
+    width: calc(100%/4);
+}
+
+button {
+    cursor: pointer;
+    border: 0px;
+    background: white;
+    
+    border-radius: 5px;
+    transition: all 100ms ease-out;
+    padding: 0.5rem;
+    font-size: 1.5rem;
+}
+
+button:hover {
+    opacity: 70%;
+}
+
+button:active {
+    scale: 105%;
+    background: skyblue;
+    color: invert(white);
+}
+
+.graph {
+    width: 800px;
+    height: 600px;
+    border: 1px solid #000;
+  }
