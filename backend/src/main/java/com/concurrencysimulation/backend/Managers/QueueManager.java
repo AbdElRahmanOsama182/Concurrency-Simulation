@@ -23,7 +23,7 @@ public class QueueManager {
     public Queue createQueue() {
         Queue queue = new Queue(nextId);
         nextId++;
-        queues.put(queue.getId(), queue);
+        queues.put(queue.getQueueId(), queue);
         return queue;
     }
 
