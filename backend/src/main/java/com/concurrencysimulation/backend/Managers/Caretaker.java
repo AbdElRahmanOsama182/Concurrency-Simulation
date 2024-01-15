@@ -8,6 +8,9 @@ public class Caretaker {
     private static Caretaker instance = null;
     private ArrayList<Memento> history = new ArrayList<Memento>();
 
+    private Caretaker(){
+    }
+    
     public static Caretaker getinstance(){
         if(instance == null){
             instance = new Caretaker();
