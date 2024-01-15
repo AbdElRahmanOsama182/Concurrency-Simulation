@@ -24,6 +24,7 @@ public class QueueManager {
         Queue queue = new Queue(nextId);
         nextId++;
         queues.put(queue.getQueueId(), queue);
+
         return queue;
     }
 

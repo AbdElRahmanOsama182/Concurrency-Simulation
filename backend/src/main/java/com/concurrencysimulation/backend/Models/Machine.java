@@ -102,6 +102,7 @@ public class Machine extends Thread{
         Product product2 = new Product(Color.BLUE,2);
         machine2.serve(product2);
 
+
     }
 
 }

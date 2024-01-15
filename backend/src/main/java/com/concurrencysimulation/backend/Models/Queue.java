@@ -23,6 +23,7 @@ public class Queue extends Thread {
     public ArrayList<Product> getProducts() {
         return products;
     }
+
     public void setMachines(ArrayList<Machine> machines) {
         this.machines = machines;
     }
