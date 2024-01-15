@@ -3,6 +3,7 @@ package com.concurrencysimulation.backend.Managers;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.concurrencysimulation.backend.Models.Machine;
 import com.concurrencysimulation.backend.Models.Queue;
 
 public class QueueManager {
@@ -41,4 +42,9 @@ public class QueueManager {
     public Map<Integer, Queue> getQueues() {
         return queues;
     }
+
+    public void setQueues(Map<Integer, Queue> queues){
+        this.queues = queues;
+    }
+
 }

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.concurrencysimulation.backend.Models.Machine;
 import com.concurrencysimulation.backend.Models.Product;
 
 public class ProductManager {
@@ -51,6 +52,11 @@ public class ProductManager {
     public Map<Integer, Product> getProducts() {
         return products;
     }
+
+    public void setProducts(Map<Integer, Product> products){
+        this.products = products;
+    }
+
 
     public Color getRandomColor() {
         int r = (int) (Math.random() * 256);
