@@ -42,4 +42,8 @@ public class QueueManager {
     public Map<Integer, Queue> getQueues() {
         return queues;
     }
+
+    public void setQueues(Map<Integer, Queue> queues){
+        this.queues = queues;
+    }
 }

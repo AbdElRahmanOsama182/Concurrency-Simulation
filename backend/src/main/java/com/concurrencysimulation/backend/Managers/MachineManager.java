@@ -42,6 +42,10 @@ public class MachineManager {
         return machines;
     }
 
+    public void setMachines(Map<Integer, Machine> machines){
+        this.machines = machines;
+    }
+
     public int getRandomTime() {
         int time = (int) (Math.random() * 1000);
         return time;
