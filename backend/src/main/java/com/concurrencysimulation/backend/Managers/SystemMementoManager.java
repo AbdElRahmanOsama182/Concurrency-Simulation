@@ -10,19 +10,23 @@ import com.concurrencysimulation.backend.Models.Queue;
 
 public class SystemMementoManager {
     
-    MachineManager machineManager = MachineManager.getInstance();
-    ProductManager productManager = ProductManager.getInstance();
-    QueueManager queueManager = QueueManager.getInstance();
-
-    private Map<Integer, Machine> machines = machineManager.getMachines();
-    private Map<Integer, Product> products = productManager.getProducts();
-    private Map<Integer, Queue> queues = queueManager.getQueues();
+    private MachineManager machineManager = MachineManager.getInstance();
+    private ProductManager productManager = ProductManager.getInstance();
+    private QueueManager queueManager = QueueManager.getInstance();
 
     public Memento saveSystem(){
+        Map<Integer, Machine> machines = new HashMap<>(machineManager.getMachines());
+        Map<Integer, Product> products = new HashMap<>(productManager.getProducts());
+        Map<Integer, Queue> queues = new HashMap<>(queueManager.getQueues());
+
         return new Memento(machines, products, queues);
     }
 
     public void restoreSystem(Memento memento){
+        if(memento == null){
+            throw new IllegalArgumentException("Cannot restore system with a null Memento.");
+        }
+
         machineManager.setMachines(memento.getMachines());
         productManager.setProducts(memento.getProducts());
         queueManager.setQueues(memento.getQueues());
