@@ -3,17 +3,17 @@ package com.concurrencysimulation.backend.Models;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class Queue {
-    private int id;
+public class Queue extends Thread {
+    private int queueId;
     private ArrayList<Machine> machines = new ArrayList<Machine>();
     private ArrayList<Product> products = new ArrayList<Product>();
 
     public Queue(int id) {
-        this.id = id;
+        this.queueId = id;
     }
 
-    public int getId() {
-        return id;
+    public int getQueueId() {
+        return queueId;
     }
 
     public ArrayList<Machine> getMachines() {
@@ -22,10 +22,6 @@ public class Queue {
 
     public ArrayList<Product> getProducts() {
         return products;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public void setMachines(ArrayList<Machine> machines) {

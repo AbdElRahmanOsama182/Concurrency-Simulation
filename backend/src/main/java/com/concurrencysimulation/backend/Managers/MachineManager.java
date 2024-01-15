@@ -21,10 +21,7 @@ public class MachineManager {
     }
 
     public Machine createMachine(int time) {
-        if (time < 1000) {
-            time = getRandomTime();
-        }
-        Machine machine = new Machine(nextId, time);
+        Machine machine = new Machine(nextId);
         machines.put(nextId, machine);
         nextId++;
         return machine;
