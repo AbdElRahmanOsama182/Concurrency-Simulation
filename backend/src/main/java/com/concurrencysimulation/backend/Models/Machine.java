@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import com.concurrencysimulation.backend.Models.Queue;
 import com.concurrencysimulation.backend.Models.Product;
 
-public class Machine extends Thread{
+public class Machine extends Thread implements Observable {
     private int machineId;
-    private Product currentProduct;   // Product that is currently being processed
+    private Product currentProduct; // Product that is currently being processed
     private Queue queue;
     private ArrayList<Queue> queues = new ArrayList<Queue>();
 
@@ -30,15 +30,15 @@ public class Machine extends Thread{
         this.currentProduct = product;
     }
 
-    public void finished(){
+    public void finished() {
         this.currentProduct = null;
-        for(Queue queue : queues){
-            synchronized(queue){
-                if(queue.getProducts().size()>0){
+        for (Queue queue : queues) {
+            synchronized (queue) {
+                if (queue.getProducts().size() > 0) {
                     Product product = queue.getProducts().get(0);
                     queue.removeProduct(product);
                     System.out.println("Product " + product.getId() + " is being served in machine " + this.machineId);
-                    
+
                     this.setCurrentProduct(product);
                     this.run();
                     return;
@@ -62,7 +62,7 @@ public class Machine extends Thread{
             e.printStackTrace();
         }
 
-        System.out.println("Product " + currentProduct.getId() + " is finished"+ " in machine " + this.machineId);
+        System.out.println("Product " + currentProduct.getId() + " is finished" + " in machine " + this.machineId);
 
         synchronized (queue) {
             // add product to queue
@@ -77,31 +77,35 @@ public class Machine extends Thread{
         this.start();
     }
 
-    public void setTargetQueue(Queue queue){
+    public void setTargetQueue(Queue queue) {
         this.queue = queue;
     }
 
-    public void addQueue(Queue queue){
+    public void addQueue(Queue queue) {
         this.queues.add(queue);
     }
 
+    public void notifyObserver(Boolean isFree) {
+        for (Queue queue : queues) {
+            queue.update(isFree, this);
+        }
+    }
 
     public static void main(String[] args) {
         Queue queue = new Queue(1);
         Queue queue2 = new Queue(2);
-        
+
         Machine machine = new Machine(1);
         machine.addQueue(queue);
         machine.setTargetQueue(queue2);
-        Product product = new Product(Color.RED,1);
+        Product product = new Product(Color.RED, 1);
         machine.serve(product);
 
         Machine machine2 = new Machine(2);
         machine2.addQueue(queue2);
         machine2.setTargetQueue(queue);
-        Product product2 = new Product(Color.BLUE,2);
+        Product product2 = new Product(Color.BLUE, 2);
         machine2.serve(product2);
-
 
     }
 
