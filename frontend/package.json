@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
+    "typescript": "^5.3.3",
     "v-network-graph": "^0.9.14",
     "vue": "^3.2.13"
   },

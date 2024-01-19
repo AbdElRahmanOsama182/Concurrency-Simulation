@@ -23,7 +23,7 @@ body {
     cursor: move;
     backdrop-filter: blur(5px);
     grid-auto-flow: column;
-    width: calc(100%/4);
+
 }
 
 button {
