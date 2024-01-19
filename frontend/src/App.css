@@ -10,6 +10,7 @@ body {
     justify-content: center;
     height: 100vh;
     gap: 20px;
+
 }
 .panel {
     position: absolute;
@@ -23,7 +24,6 @@ body {
     cursor: move;
     backdrop-filter: blur(5px);
     grid-auto-flow: column;
-
 }
 
 button {
@@ -34,7 +34,8 @@ button {
     border-radius: 5px;
     transition: all 100ms ease-out;
     padding: 0.5rem;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
+    font-weight: 500;
 }
 
 button:hover {
@@ -44,7 +45,28 @@ button:hover {
 button:active {
     scale: 105%;
     background: skyblue;
-    color: invert(white);
+
+}
+.addm:hover::after {
+    content: "  Add machine";
+}
+.addq:hover::after {
+    content: "  Add queue";
+}
+.adde:hover::after {
+    content: "  Add edge";
+}
+.run:hover::after {
+    content: "  Run";
+}
+.delete:hover::after {
+    content: "  Delete";
+}
+.replay:hover::after {
+    content: "  Replay";
+}
+.clear:hover::after {
+    content: "  clear";
 }
 
 .graph {

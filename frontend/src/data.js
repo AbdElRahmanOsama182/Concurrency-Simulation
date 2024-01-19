@@ -1,9 +1,9 @@
 import * as Vng from "v-network-graph";
 
 const nodes = {
-  node1: { name: "Start Node", shape: 'circle', color: 'green',main: true},
-  node2: { name: "End Node" , shape: 'circle', color: 'red',main: true},
-  node3: { name: "M1",type: 'machine', shape: 'circle', color: '#FD5200'},
+  node1: { name: "Start Queue",type: 'queue', shape: 'circle', color: '#2B50AA',main: true},
+  node2: { name: "End Queue",type: 'queue' , shape: 'circle', color: '#D72638',main: true},
+  node3: { name: "M1",type: 'machine', shape: 'circle', color: '#386641'},
 };
 
 const edges = {
@@ -15,15 +15,19 @@ const layouts = {
   nodes: {
     node1: { x: 300, y: 0 },
     node2: { x: -300, y: 0 },
-    node3: { x: 0, y: 0 },
+    node3: { x: 0, y: 150 },
   },
+};
+
+const paths = {
+    path1: { edges:["edge1","edge2"] },
 };
 
 const configs = Vng.defineConfigs({
     view: {
         fitView: true,
         // scalingObjects: true,
-        layoutHandler: new Vng.GridLayout({ grid: 30 }),
+        layoutHandler: new Vng.GridLayout({ grid: 15 }),
     },
   node: {
     selectable: true,
@@ -47,14 +51,28 @@ const configs = Vng.defineConfigs({
     edge: {
     selectable: true,
     hover: {
-        width: 5,
+        width: 8,
         color: edge => edge.color
       },
     normal: {
-      width: 5,
+      width: 8,
       color: edge => edge.color
     },
+    selected:{
+        dasharray: null,
+    }
   },
+    path: {
+        selectable: false,
+        visible: true,
+        normal: {
+            width: 3,
+            dasharray: "10 16",
+            animate: true,
+            color: "#ffffff",
+            animationSpeed: 40,
+        },
+    },
 });
 
 export default {
@@ -62,4 +80,5 @@ export default {
   edges,
   layouts,
   configs,
+    paths,
 };

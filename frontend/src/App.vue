@@ -6,6 +6,7 @@
       :selected-edges="selectedEdges"
       :nodes="nodes"
       :edges="edges"
+      :paths="paths"
       :layouts="data.layouts"
       :configs="configs"
     />
@@ -17,13 +18,16 @@
       @mouseup="stopDrag"
       @mouseleave="stopDrag"
     >
-      <button @click="AddMachine">🏭</button>
-      <button @click="AddQueue">📦</button>
-      <button @click="AddEdge">🔗</button>
-      <button @click="Run">▶️</button>
-       <!-- <button @click="Pause">⏸</button>-->
-      <button @click="remove">❌</button>
-      <button @click="Reset">🔄</button>
+      <button @click="AddMachine" class="addm">🏭</button>
+      <button @click="AddQueue" class="addq">📦</button>
+      <button @click="AddEdge" class="adde">🔗</button>
+      <button @click="Run" class="run">▶️</button>
+       <!-- <button @click="Pause" class="pause">⏸</button>-->
+      <button @click="Replay" class="replay">🔄</button>
+      <button @click="remove" class="delete">❌</button>
+      <button @click="clear" class="clear">🗑️</button>
+
+      
     </div>
   </div>
 </template>
@@ -51,19 +55,24 @@ export default {
       nextEdgeIndex,
       configs,
       data,
+      paths,
       ref
     };
   },
   methods: {
+    Run() {
+      this.configs.path.visible = !this.configs.path.visible;
+    },
     remove() {
       for (const nodeId of this.selectedNodes) {
         if(!this.nodes[nodeId].main) {
-          delete this.nodes[nodeId];
           if (this.nodes[nodeId].type === 'machine') {
             this.nextMachineIndex--;
           } else if (this.nodes[nodeId].type === 'queue') {
             this.nextQueueIndex--;
           }
+          this.nextNodeIndex--;
+          delete this.nodes[nodeId];
         }
       }
       for (const edgeId of this.selectedEdges) {
@@ -72,27 +81,43 @@ export default {
     },
     AddMachine() {
       const nodeId = `node${nextNodeIndex.value}`;
-      const name = `M${nextMachineIndex.value}`;
-      nodes[nodeId] = { name, type: 'machine', shape: 'circle', color: '#FD5200' };
+      const name = `M${this.nextMachineIndex}`;
+      nodes[nodeId] = { name, type: 'machine', shape: 'circle', color: '#386641' };
       this.nextMachineIndex++;
       this.nextNodeIndex++;
     },
     AddQueue() {
       const nodeId = `node${nextNodeIndex.value}`;
-      const name = `Q${nextQueueIndex.value}`;
-      nodes[nodeId] = { name, type: 'queue', shape: 'rect', color: '#00FFE7'};
+      const name = `Q${this.nextQueueIndex}`;
+      nodes[nodeId] = { name, type: 'queue', shape: 'rect', color: '#FFDF64'};
       this.nextQueueIndex++;
       this.nextNodeIndex++;
     },
     AddEdge() {
-      if (sn.value.length !== 2) return;
-      const [source, target] = sn.value;
-      if (nodes[source].name[0] !== nodes[target].name[0]) {
-        const edgeId = `edge${nextEdgeIndex.value}`;
-        edges[edgeId] = { source, target , color: '#000000'};
-        nextEdgeIndex.value++;
+      if (this.selectedNodes.length !== 2) {
+        alert('Please select two nodes to connect.');
+        return;
+      }
+      const [source, target] = this.selectedNodes;
+      if (this.nodes[source].type !== this.nodes[target].type) {
+        
+        // Check if the source node is a machine and if it's already a source of any other edge
+        if (this.nodes[source].type === 'machine' && Object.values(this.edges).some(edge => edge.source === source)) {
+          alert('This machine is already connected to a queue.');
+          return;
+        }
+        const edgeId = `edge${this.nextEdgeIndex}`;
+        this.edges[edgeId] = { source, target , color: '#000000'};
+        this.nextEdgeIndex++;
+      }
+      else {
+        alert('Please select two nodes of different types to connect.');
       }
     },
+    clear() {
+        window.location.reload();
+    },
+
 
     startDrag(event) {
       this.isDragging = true;
@@ -116,11 +141,13 @@ import data from "./data.js";
 
 const nodes = reactive({ ...data.nodes });
 const edges = reactive({ ...data.edges });
-const configs = reactive({...data.configs})
+const configs = reactive({ ...data.configs});
+const paths = reactive({ ...data.paths});
 const nextNodeIndex = ref(Object.keys(nodes).length + 1);
 const nextEdgeIndex = ref(Object.keys(edges).length + 1);
-const nextMachineIndex = ref(2);
-const nextQueueIndex = ref(1);
+
+// const nextMIndex = ref(Object.values(nodes).filter(node => node.type === 'machine').length + 1);
+// const nextQIndex = ref(Object.values(nodes).filter(node => node.type === 'queue').length + 1);;
 
 const sn = ref([]);
 const se = ref([]);
