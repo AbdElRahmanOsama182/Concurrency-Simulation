@@ -150,6 +150,7 @@ public class Machine extends Thread {
         machine2.start();
         machine3.start();
 
+
     }
 
 }
