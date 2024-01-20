@@ -20,7 +20,7 @@ public class MachineManager {
         return instance;
     }
 
-    public Machine createMachine(int time) {
+    public Machine createMachine() {
         Machine machine = new Machine(nextId);
         machines.put(nextId, machine);
         nextId++;
@@ -49,5 +49,9 @@ public class MachineManager {
     public int getRandomTime() {
         int time = (int) (Math.random() * 1000);
         return time;
+    }
+
+    public void clear() {
+        machines.clear();
     }
 }

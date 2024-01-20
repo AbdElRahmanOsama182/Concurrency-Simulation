@@ -68,4 +68,8 @@ public class ProductManager {
         }
         return color;
     }
+
+    public void clear() {
+        products.clear();
+    }
 }
