@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import com.concurrencysimulation.backend.Models.Queue;
 import com.concurrencysimulation.backend.Models.Product;
 
-public class Machine extends Thread {
+
+public class Machine extends Thread implements Observable {
     private int machineId;
     private Product currentProduct; // Product that is currently being processed
     private Queue queue;
@@ -95,6 +96,12 @@ public class Machine extends Thread {
     public void addQueue(Queue queue) {
         this.queues.add(queue);
     }
+  
+    public void notifyObserver(Boolean isFree) {
+        for (Queue queue : queues) {
+            queue.update(isFree, this);
+        }
+    }
 
     public static void main(String[] args) {
 
@@ -149,7 +156,6 @@ public class Machine extends Thread {
         machine1.start();
         machine2.start();
         machine3.start();
-
 
     }
 

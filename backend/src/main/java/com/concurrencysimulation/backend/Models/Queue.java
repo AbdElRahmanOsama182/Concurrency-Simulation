@@ -4,8 +4,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import javax.crypto.Mac;
-
-public class Queue extends Thread {
+public class Queue extends Thread implements Observer {
     private int queueId;
     private ArrayList<Machine> machines = new ArrayList<Machine>();
     private ArrayList<Product> products = new ArrayList<Product>();
@@ -65,5 +64,20 @@ public class Queue extends Thread {
     public void removeProduct(Product product) {
         products.remove(product);
     }
-    
+
+
+    public void update(Boolean isFree, Machine machine) {
+        if (isFree) {
+            if (!machines.contains(machine)) {
+                machines.add(machine);
+            }
+            System.out.println("Machine " + machine.getMachineId() + " is free");
+        } else {
+            if (machines.contains(machine)) {
+                machines.remove(machine);
+            }
+            System.out.println("Machine " + machine.getMachineId() + " is busy");
+        }
+    }
+
 }
