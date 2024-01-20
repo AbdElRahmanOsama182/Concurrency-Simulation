@@ -1,5 +1,6 @@
 package com.concurrencysimulation.backend.API;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,18 +21,23 @@ public class MementoControllar {
 
     @PostMapping("/save")
     public ResponseEntity<String> save() {
-
-        caretaker.push(systemMementoManager.saveSystem());
-        
-        return ResponseEntity.ok("System saved");
+        try{
+            caretaker.push(systemMementoManager.saveSystem());
+            return ResponseEntity.ok("System saved");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving system");
+        }
     }
     
     @PostMapping("/restore")
     public ResponseEntity<String> restore(){
-        
-        systemMementoManager.restoreSystem(caretaker.undo());
 
-        return ResponseEntity.ok("System restored");
+        try{
+            systemMementoManager.restoreSystem(caretaker.undo());
+            return ResponseEntity.ok("System restored");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error restoring system");
+        }
     }
     
 }
