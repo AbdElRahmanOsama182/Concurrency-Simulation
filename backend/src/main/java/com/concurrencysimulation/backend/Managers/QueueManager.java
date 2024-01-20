@@ -43,6 +43,9 @@ public class QueueManager {
         return queues;
     }
 
+    public void clear() {
+        queues.clear();
+    }
     public void setQueues(Map<Integer, Queue> queues){
         this.queues = queues;
     }
