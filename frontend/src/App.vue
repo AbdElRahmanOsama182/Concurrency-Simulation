@@ -1,23 +1,10 @@
 <template>
   <div class="all">
-    <v-network-graph
-      v-model:selected-nodes="selectedNodes"
-      v-model:selected-edges="selectedEdges"
-      :selected-edges="selectedEdges"
-      :nodes="nodes"
-      :edges="edges"
-      :paths="paths"
-      :layouts="data.layouts"
-      :configs="configs"
-    />
-    <div
-      class="panel"
-      v-bind:style="{ left: `${x}px`, top: `${y}px` }"
-      @mousedown="startDrag"
-      @mousemove="dragging"
-      @mouseup="stopDrag"
-      @mouseleave="stopDrag"
-    >
+    <v-network-graph v-model:selected-nodes="selectedNodes" v-model:selected-edges="selectedEdges"
+      :selected-edges="selectedEdges" :nodes="nodes" :edges="edges" :paths="paths" :layouts="data.layouts"
+      :configs="configs" />
+    <div class="panel" v-bind:style="{ left: `${x}px`, top: `${y}px` }" @mousedown="startDrag" @mousemove="dragging"
+      @mouseup="stopDrag" @mouseleave="stopDrag">
       <button @click="AddMachine" class="addm">🏭</button>
       <button @click="AddQueue" class="addq">📦</button>
       <button @click="AddEdge" class="adde">🔗</button>
@@ -27,7 +14,7 @@
       <button @click="remove" class="delete">❌</button>
       <button @click="clear" class="clear">🗑️</button>
 
-      
+
     </div>
   </div>
 </template>
@@ -36,7 +23,7 @@
 
 export default {
   name: 'App',
-  
+
   data() {
     return {
       x: window.innerWidth / 3,
@@ -48,8 +35,8 @@ export default {
       running: false,
       nodes,
       edges,
-      selectedNodes:sn,
-      selectedEdges:se,
+      selectedNodes: sn,
+      selectedEdges: se,
       nextMachineIndex: 2,
       nextQueueIndex: 1,
       nextNodeIndex,
@@ -60,6 +47,10 @@ export default {
       ref
     };
   },
+  mounted() {
+    console.log("mounted");
+    this.update();
+  },
   methods: {
     Run() {
       const visited = {};
@@ -68,6 +59,52 @@ export default {
 
       this.configs.path.visible = !this.configs.path.visible;
       this.running = true;
+
+      // create fetch post request with payloads in following format
+      // {
+      //   "nodes": {
+      // "node1":{ "name": "Start Node", "shape": "circle", "color": "green","main": true,"type":"queue","x":0,"y":0},
+      // "node2":{ "name": "End Node", "shape": "circle", "color": "green","main": true,"type":"queue","x":0,"y":0},
+      // "node3":{ "name": "Q1", "shape": "circle", "color": "green","main": true,"type":"queue","x":0,"y":0},
+      // "node4":{ "name": "M1", "shape": "square", "color": "red","main": true,"type":"machine","x":0,"y":0},
+      // }
+      //   "edges": {
+      // "edge1":{ "source": "node1", "target": "node3", "color": "black"},
+      // "edge2":{ "source": "node3", "target": "node4", "color": "black"},
+      // "edge3":{ "source": "node4", "target": "node2", "color": "black"},
+      // }
+      // }
+      let nodes = {};
+      for (let i = 1; i < this.nextNodeIndex; i++) {
+        let node = this.nodes[`node${i}`];
+        nodes[`node${i}`] = { "name": node.name, "shape": node.shape, "color": node.color, "main": node.main, "type": node.type, "x": 0, "y": 0 };
+      }
+
+      let edges = {};
+      for (let i = 1; i < this.nextEdgeIndex; i++) {
+        let edge = this.edges[`edge${i}`];
+        edges[`edge${i}`] = { "source": edge.source, "target": edge.target, "color": edge.color };
+      }
+
+      let data = {
+        "nodes": nodes,
+        "edges": edges
+      }
+
+      console.log(data);
+
+      fetch('http://localhost:8080/data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      })
+        .then(response => response.text())
+        .then(data => {
+          console.log('Success:', data);
+        })
+
     },
     findAllPaths(current, target, visited, path, edges) {
       visited[current] = true;
@@ -107,7 +144,7 @@ export default {
         return;
       }
       for (const nodeId of this.selectedNodes) {
-        if(!this.nodes[nodeId].main) {
+        if (!this.nodes[nodeId].main) {
           if (this.nodes[nodeId].type === 'machine') {
             this.nextMachineIndex--;
           } else if (this.nodes[nodeId].type === 'queue') {
@@ -141,7 +178,7 @@ export default {
       }
       const nodeId = `node${nextNodeIndex.value}`;
       const name = `Q${this.nextQueueIndex}`;
-      nodes[nodeId] = { name, type: 'queue', shape: 'rect', color: '#FFDF64'};
+      nodes[nodeId] = { name, type: 'queue', shape: 'rect', color: '#FFDF64' };
       this.nextQueueIndex++;
       this.nextNodeIndex++;
     },
@@ -157,14 +194,14 @@ export default {
       }
       const [source, target] = this.selectedNodes;
       if (this.nodes[source].type !== this.nodes[target].type) {
-        
+
         // Check if the source node is a machine and if it's already a source of any other edge
         if (this.nodes[source].type === 'machine' && Object.values(this.edges).some(edge => edge.source === source)) {
           alert('This machine is already connected to a queue.');
           return;
         }
         const edgeId = `edge${this.nextEdgeIndex}`;
-        this.edges[edgeId] = { source, target , color: '#000000'};
+        this.edges[edgeId] = { source, target, color: '#000000' };
         this.nextEdgeIndex++;
       }
       else {
@@ -172,7 +209,7 @@ export default {
       }
     },
     clear() {
-        window.location.reload();
+      window.location.reload();
     },
 
 
@@ -189,6 +226,28 @@ export default {
     },
     stopDrag() {
       this.isDragging = false;
+    },
+    update() {
+      // register function to call every 100ms that fetch data from backend
+      // and update the nodes and edges
+
+      setInterval(() => {
+        if (this.running) {
+          console.log("fetchhh");
+
+          fetch('http://localhost:8080/data', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch((error) => {
+              console.error('Error:', error);
+            });
+        }
+      }, 100);
     }
   }
 }
@@ -198,8 +257,8 @@ import data from "./data.js";
 
 const nodes = reactive({ ...data.nodes });
 const edges = reactive({ ...data.edges });
-const configs = reactive({ ...data.configs});
-const paths = reactive({ ...data.paths});
+const configs = reactive({ ...data.configs });
+const paths = reactive({ ...data.paths });
 const nextNodeIndex = ref(Object.keys(nodes).length + 1);
 const nextEdgeIndex = ref(Object.keys(edges).length + 1);
 

@@ -67,7 +67,6 @@ public class ChainController {
                     Map<String, Object> nodePayload = (Map<String, Object>) nodeEntry.getValue();
                     Node node = new Node(nodePayload.get("name").toString(), nodePayload.get("shape").toString(),
                             nodePayload.get("color").toString(), nodePayload.get("type").toString(),
-                            Boolean.parseBoolean(nodePayload.get("main").toString()),
                             Integer.parseInt(nodePayload.get("x").toString()),
                             Integer.parseInt(nodePayload.get("y").toString()));
                     nodes.put(nodeEntry.getKey(), node);
@@ -123,7 +122,7 @@ public class ChainController {
                 queue.setNode(node);
                 queue.setNodeKey(entry.getKey());
                 mappingQueue.put(entry.getKey(),queue);
-                if(node.getName().equals("Start Node")){
+                if(node.getName().equals("Start Queue")){
                     startQueue=queue;
                 }
             }

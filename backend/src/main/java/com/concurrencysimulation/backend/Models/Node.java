@@ -9,16 +9,14 @@ public class Node {
     String shape;
     String color;
     String type;
-    boolean main;
     int x;
     int y;
 
-    public Node(String name, String shape, String color, String type, boolean main, int x, int y) {
+    public Node(String name, String shape, String color, String type, int x, int y) {
         this.name = name;
         this.shape = shape;
         this.color = color;
         this.type = type;
-        this.main = main;
         this.x = x;
         this.y = y;
     }
@@ -59,14 +57,6 @@ public class Node {
         this.type = type;
     }
 
-    public boolean isMain() {
-        return main;
-    }
-
-    public void setMain(boolean main) {
-        this.main = main;
-    }
-
     
 
     public int getX() {
@@ -90,8 +80,7 @@ public class Node {
             "name",this.name,
             "shape",this.shape,
             "color",this.color,
-            "type",this.type,
-            "main",this.main
+            "type",this.type
         );
         return node;
     }
