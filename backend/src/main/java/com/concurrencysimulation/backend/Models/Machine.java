@@ -5,17 +5,17 @@ import java.util.ArrayList;
 
 import com.concurrencysimulation.backend.Models.Queue;
 import com.concurrencysimulation.backend.Models.Product;
+import com.concurrencysimulation.backend.Models.Node;
 
 public class Machine extends Thread {
     private int machineId;
     private Product currentProduct; // Product that is currently being processed
     private Queue queue;
     private ArrayList<Queue> queues = new ArrayList<Queue>();
+    private Node node;
 
     public Machine(int id) {
         this.machineId = id;
-        this.queue = queue;
-        this.queues = queues;
     }
 
     public int getMachineId() {
@@ -32,6 +32,14 @@ public class Machine extends Thread {
 
     public void setCurrentProduct(Product product) {
         this.currentProduct = product;
+    }
+
+    public void setNode(Node node) {
+        this.node = node;
+    }
+
+    public Node getNode() {
+        return node;
     }
 
     public void finished() {

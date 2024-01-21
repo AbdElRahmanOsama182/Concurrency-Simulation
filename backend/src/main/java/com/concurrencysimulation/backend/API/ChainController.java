@@ -1,5 +1,6 @@
 package com.concurrencysimulation.backend.API;
 
+import java.awt.Color;
 import java.time.temporal.ChronoUnit;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -109,14 +110,16 @@ public class ChainController {
         Map<String,Queue> mappingQueue= new HashMap<>();
 
         Queue startQueue=null;
-        // create machines
+        // create machines and queues
         for (Map.Entry<String, Node> entry : nodes.entrySet()) {
             Node node = entry.getValue();
             if (node.getType().equals("machine")) {
                 Machine machine=MachineManager.getInstance().createMachine();
+                machine.setNode(node);
                 mappingMachine.put(entry.getKey(),machine);
             }else if(node.getType().equals("queue")){
                 Queue queue=QueueManager.getInstance().createQueue();
+                queue.setNode(node);
                 mappingQueue.put(entry.getKey(),queue);
                 if(node.getName().equals("Start Node")){
                     startQueue=queue;
@@ -128,11 +131,13 @@ public class ChainController {
         // print mappings
         System.out.println("Mappings:");
         for (Map.Entry<String, Machine> entry : mappingMachine.entrySet()) {
-            System.out.println(entry.getKey() + " : " + entry.getValue().getMachineId());
+            System.out.println(entry.getKey() + " : " + entry.getValue().getMachineId() + " : "
+                    + entry.getValue().getNode().getName());
         }
         System.out.println("Mappings Queue:");
         for (Map.Entry<String, Queue> entry : mappingQueue.entrySet()) {
-            System.out.println(entry.getKey() + " : " + entry.getValue().getQueueId());
+            System.out.println(entry.getKey() + " : " + entry.getValue().getQueueId() + " : "
+                    + entry.getValue().getNode().getName());
         }
 
         // create edges
@@ -180,5 +185,62 @@ public class ChainController {
         return "Machines are running";
     }
     
+
+    @GetMapping("/data")
+    public Map<String,Object> fetchGraph(){
+        //iterate over machines and queues and create entry with key: node name and value: color of product
+        // for queue key: node name, value: number of products
+        Map<String,Object> data=new HashMap<>();
+
+        for(Machine machine:MachineManager.getInstance().getMachines().values()){
+            if(machine.getCurrentProduct()!=null){
+                Color color=machine.getCurrentProduct().getColor();
+                String hex = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
+                data.put(machine.getNode().getName(), hex);
+            }else{
+                data.put(machine.getNode().getName(), "white");
+            }
+        }
+
+        for(Queue queue:QueueManager.getInstance().getQueues().values()){
+            data.put(queue.getNode().getName(), queue.getProducts().size());
+        }
+
+        return data;
+    }
+    
+    // @GetMapping("/graph")
+    // public Map<String,Object> fetchStructure(){
+    //     Map<String,Object> payload=new HashMap<>();
+    //     Map<String, Object> nodes = new HashMap<>();
+    //     Map<String, Object> edges = new HashMap<>();
+    //     // add nodes to payload
+    //     for (Map.Entry<Integer, Machine> entry : MachineManager.getInstance().getMachines().entrySet()) {
+    //         Machine machine = entry.getValue();
+    //         Node node = new Node(machine.getMachineId(), "circle", "green", "machine", true, 0, 0);
+    //         nodes.put("node"+machine.getMachineId(), node.serialize());
+    //     }
+    //     for (Map.Entry<Integer, Queue> entry : QueueManager.getInstance().getQueues().entrySet()) {
+    //         Queue queue = entry.getValue();
+    //         Node node = new Node(queue.getQueueId(), "circle", "green", "queue", true, 0, 0);
+    //         nodes.put("node"+queue.getQueueId(), node.serialize());
+    //     }
+    //     // add edges to payload
+    //     for (Map.Entry<Integer, Machine> entry : MachineManager.getInstance().getMachines().entrySet()) {
+    //         Machine machine = entry.getValue();
+    //         for(Queue queue:machine.getQueues()){
+    //             Edge edge=new Edge("node"+machine.getMachineId(),"node"+queue.getQueueId(),"#000000");
+    //             edges.put("edge"+machine.getMachineId()+queue.getQueueId(), edge.serialize());
+    //         }
+    //         if(machine.getTargetQueue()!=null){
+    //             Edge edge=new Edge("node"+machine.getMachineId(),"node"+machine.getTargetQueue().getQueueId(),"#000000");
+    //             edges.put("edge"+machine.getMachineId()+machine.getTargetQueue().getQueueId(), edge.serialize());
+    //         }
+    //     }
+    //     // add nodes and edges to payload
+    //     payload.put("nodes", nodes);
+    //     payload.put("edges", edges);
+    //     return payload;
+    // }
 
 }

@@ -9,6 +9,7 @@ public class Queue extends Thread {
     private int queueId;
     private ArrayList<Machine> machines = new ArrayList<Machine>();
     private ArrayList<Product> products = new ArrayList<Product>();
+    private Node node;
 
     public Queue(int id) {
         this.queueId = id;
@@ -64,6 +65,14 @@ public class Queue extends Thread {
 
     public void removeProduct(Product product) {
         products.remove(product);
+    }
+
+    public void setNode(Node node) {
+        this.node = node;
+    }
+
+    public Node getNode() {
+        return node;
     }
     
 }
