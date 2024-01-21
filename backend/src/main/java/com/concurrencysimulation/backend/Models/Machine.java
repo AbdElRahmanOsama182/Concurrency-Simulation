@@ -13,6 +13,7 @@ public class Machine extends Thread {
     private Queue queue;
     private ArrayList<Queue> queues = new ArrayList<Queue>();
     private Node node;
+    private String nodeKey;
 
     public Machine(int id) {
         this.machineId = id;
@@ -40,6 +41,14 @@ public class Machine extends Thread {
 
     public Node getNode() {
         return node;
+    }
+
+    public void setNodeKey(String nodeKey) {
+        this.nodeKey = nodeKey;
+    }
+
+    public String getNodeKey() {
+        return nodeKey;
     }
 
     public void finished() {
@@ -100,9 +109,22 @@ public class Machine extends Thread {
         this.queue = queue;
     }
 
+    public Queue getTargetQueue() {
+        return queue;
+    }
+
     public void addQueue(Queue queue) {
         this.queues.add(queue);
     }
+
+    public void removeQueue(Queue queue) {
+        this.queues.remove(queue);
+    }
+
+    public ArrayList<Queue> getQueues() {
+        return queues;
+    }
+
 
     public static void main(String[] args) {
 

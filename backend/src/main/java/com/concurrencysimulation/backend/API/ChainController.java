@@ -116,10 +116,12 @@ public class ChainController {
             if (node.getType().equals("machine")) {
                 Machine machine=MachineManager.getInstance().createMachine();
                 machine.setNode(node);
+                machine.setNodeKey(entry.getKey());
                 mappingMachine.put(entry.getKey(),machine);
             }else if(node.getType().equals("queue")){
                 Queue queue=QueueManager.getInstance().createQueue();
                 queue.setNode(node);
+                queue.setNodeKey(entry.getKey());
                 mappingQueue.put(entry.getKey(),queue);
                 if(node.getName().equals("Start Node")){
                     startQueue=queue;
@@ -209,38 +211,38 @@ public class ChainController {
         return data;
     }
     
-    // @GetMapping("/graph")
-    // public Map<String,Object> fetchStructure(){
-    //     Map<String,Object> payload=new HashMap<>();
-    //     Map<String, Object> nodes = new HashMap<>();
-    //     Map<String, Object> edges = new HashMap<>();
-    //     // add nodes to payload
-    //     for (Map.Entry<Integer, Machine> entry : MachineManager.getInstance().getMachines().entrySet()) {
-    //         Machine machine = entry.getValue();
-    //         Node node = new Node(machine.getMachineId(), "circle", "green", "machine", true, 0, 0);
-    //         nodes.put("node"+machine.getMachineId(), node.serialize());
-    //     }
-    //     for (Map.Entry<Integer, Queue> entry : QueueManager.getInstance().getQueues().entrySet()) {
-    //         Queue queue = entry.getValue();
-    //         Node node = new Node(queue.getQueueId(), "circle", "green", "queue", true, 0, 0);
-    //         nodes.put("node"+queue.getQueueId(), node.serialize());
-    //     }
-    //     // add edges to payload
-    //     for (Map.Entry<Integer, Machine> entry : MachineManager.getInstance().getMachines().entrySet()) {
-    //         Machine machine = entry.getValue();
-    //         for(Queue queue:machine.getQueues()){
-    //             Edge edge=new Edge("node"+machine.getMachineId(),"node"+queue.getQueueId(),"#000000");
-    //             edges.put("edge"+machine.getMachineId()+queue.getQueueId(), edge.serialize());
-    //         }
-    //         if(machine.getTargetQueue()!=null){
-    //             Edge edge=new Edge("node"+machine.getMachineId(),"node"+machine.getTargetQueue().getQueueId(),"#000000");
-    //             edges.put("edge"+machine.getMachineId()+machine.getTargetQueue().getQueueId(), edge.serialize());
-    //         }
-    //     }
-    //     // add nodes and edges to payload
-    //     payload.put("nodes", nodes);
-    //     payload.put("edges", edges);
-    //     return payload;
-    // }
+    @GetMapping("/graph")
+    public Map<String,Object> fetchStructure(){
+        Map<String,Object> payload=new HashMap<>();
+        Map<String, Object> nodes = new HashMap<>();
+        Map<String, Object> edges = new HashMap<>();
+        // add nodes to payload
+        for (Map.Entry<Integer, Machine> entry : MachineManager.getInstance().getMachines().entrySet()) {
+            Machine machine = entry.getValue();
+            Node node = machine.getNode();
+            nodes.put(machine.getNodeKey(), node.serialize());
+        }
+        for (Map.Entry<Integer, Queue> entry : QueueManager.getInstance().getQueues().entrySet()) {
+            Queue queue = entry.getValue();
+            Node node = queue.getNode();
+            nodes.put(queue.getNodeKey(), node.serialize());
+        }
+        // add edges to payload
+        for (Map.Entry<Integer, Machine> entry : MachineManager.getInstance().getMachines().entrySet()) {
+            Machine machine = entry.getValue();
+            for(Queue queue:machine.getQueues()){
+                Edge edge=new Edge(queue.getNodeKey(),machine.getNodeKey(),"#000000");
+                edges.put("edge"+machine.getMachineId()+queue.getQueueId(), edge.serialize());
+            }
+            if(machine.getTargetQueue()!=null){
+                Edge edge=new Edge(machine.getNodeKey(),machine.getTargetQueue().getNodeKey(),"#000000");
+                edges.put("edge"+machine.getMachineId()+machine.getTargetQueue().getQueueId(), edge.serialize());
+            }
+        }
+        // add nodes and edges to payload
+        payload.put("nodes", nodes);
+        payload.put("edges", edges);
+        return payload;
+    }
 
 }
