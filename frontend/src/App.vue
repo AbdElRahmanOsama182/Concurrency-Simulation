@@ -21,8 +21,8 @@
       <button @click="AddMachine" class="addm">🏭</button>
       <button @click="AddQueue" class="addq">📦</button>
       <button @click="AddEdge" class="adde">🔗</button>
-      <button @click="Run" class="run">▶️</button>
-       <!-- <button @click="Pause" class="pause">⏸</button>-->
+      <button v-if="!running" @click="Run" class="run">▶️</button>
+      <button v-if="running" @click="Pause" class="pause">⏸</button>
       <button @click="Replay" class="replay">🔄</button>
       <button @click="remove" class="delete">❌</button>
       <button @click="clear" class="clear">🗑️</button>
@@ -45,6 +45,7 @@ export default {
       startY: 0,
       isDragging: false,
       isPopupVisible: false,
+      running: false,
       nodes,
       edges,
       selectedNodes:sn,
@@ -61,9 +62,50 @@ export default {
   },
   methods: {
     Run() {
+      const visited = {};
+      this.paths = this.findAllPaths('node1', 'node2', visited, [], this.edges);
+      console.log(this.paths);
+
       this.configs.path.visible = !this.configs.path.visible;
+      this.running = true;
+    },
+    findAllPaths(current, target, visited, path, edges) {
+      visited[current] = true;
+      let allPaths = [];
+
+      for (const edgeId in edges) {
+        const edge = edges[edgeId];
+        if (edge.source === current && !visited[edge.target]) {
+          path.push(edgeId);
+          if (edge.target === target) {
+            allPaths.push({ edges: [...path] });
+          } else {
+            allPaths = allPaths.concat(this.findAllPaths(edge.target, target, visited, path, edges));
+          }
+          path.pop();
+        }
+      }
+
+      visited[current] = false;
+      return allPaths;
+    },
+    Pause() {
+      this.configs.path.visible = !this.configs.path.visible;
+      this.running = false;
+    },
+    Replay() {
+
     },
     remove() {
+      if (this.running) {
+        alert('Please pause the simulation first.');
+        return;
+      }
+
+      if (this.selectedNodes.length === 0 && this.selectedEdges.length === 0) {
+        alert('Please select a node or an edge to delete.');
+        return;
+      }
       for (const nodeId of this.selectedNodes) {
         if(!this.nodes[nodeId].main) {
           if (this.nodes[nodeId].type === 'machine') {
@@ -71,7 +113,6 @@ export default {
           } else if (this.nodes[nodeId].type === 'queue') {
             this.nextQueueIndex--;
           }
-          this.nextNodeIndex--;
           delete this.nodes[nodeId];
         }
       }
@@ -80,6 +121,12 @@ export default {
       }
     },
     AddMachine() {
+
+      if (this.running) {
+        alert('Please pause the simulation first.');
+        return;
+      }
+
       const nodeId = `node${nextNodeIndex.value}`;
       const name = `M${this.nextMachineIndex}`;
       nodes[nodeId] = { name, type: 'machine', shape: 'circle', color: '#386641' };
@@ -87,6 +134,11 @@ export default {
       this.nextNodeIndex++;
     },
     AddQueue() {
+
+      if (this.running) {
+        alert('Please pause the simulation first.');
+        return;
+      }
       const nodeId = `node${nextNodeIndex.value}`;
       const name = `Q${this.nextQueueIndex}`;
       nodes[nodeId] = { name, type: 'queue', shape: 'rect', color: '#FFDF64'};
@@ -94,6 +146,11 @@ export default {
       this.nextNodeIndex++;
     },
     AddEdge() {
+
+      if (this.running) {
+        alert('Please pause the simulation before deleting any node or edge.');
+        return;
+      }
       if (this.selectedNodes.length !== 2) {
         alert('Please select two nodes to connect.');
         return;
