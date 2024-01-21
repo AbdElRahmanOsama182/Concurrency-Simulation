@@ -64,7 +64,7 @@ const configs = Vng.defineConfigs({
   },
     path: {
         selectable: false,
-        visible: true,
+        visible: false,
         normal: {
             width: 3,
             dasharray: "10 16",
@@ -75,10 +75,13 @@ const configs = Vng.defineConfigs({
     },
 });
 
+
+
+
 export default {
   nodes,
   edges,
   layouts,
   configs,
-    paths,
+  paths,
 };
