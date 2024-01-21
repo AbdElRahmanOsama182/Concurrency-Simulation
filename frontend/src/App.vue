@@ -75,15 +75,17 @@ export default {
       // }
       // }
       let nodes = {};
-      for (let i = 1; i < this.nextNodeIndex; i++) {
-        let node = this.nodes[`node${i}`];
-        nodes[`node${i}`] = { "name": node.name, "shape": node.shape, "color": node.color, "main": node.main, "type": node.type, "x": 0, "y": 0 };
+      for (let nodeI in this.nodes) {
+        let node = this.nodes[nodeI];
+        console.log(nodeI, node);
+        nodes[nodeI] = { "name": node.name, "shape": node.shape, "color": node.color, "main": node.main, "type": node.type, "x": 0, "y": 0 };
       }
 
       let edges = {};
-      for (let i = 1; i < this.nextEdgeIndex; i++) {
-        let edge = this.edges[`edge${i}`];
-        edges[`edge${i}`] = { "source": edge.source, "target": edge.target, "color": edge.color };
+      for (let edgeI in this.edges) {
+        let edge = this.edges[edgeI];
+        console.log(edgeI, edge);
+        edges[edgeI] = { "source": edge.source, "target": edge.target, "color": edge.color };
       }
 
       let data = {
@@ -242,7 +244,17 @@ export default {
             },
           })
             .then(response => response.json())
-            .then(data => console.log(data))
+            .then(data =>{
+              console.log(data);
+              for(let node in data){
+                for(let node2 in this.nodes){
+                  console.log(this.nodes[node2].name, node);
+                  if(this.nodes[node2].name=== node && this.nodes[node2].type === "machine"){
+                    this.nodes[node2].color = data[node];
+                  }
+                }
+              }
+            })
             .catch((error) => {
               console.error('Error:', error);
             });

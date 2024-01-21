@@ -26,7 +26,7 @@ const paths = {
 const configs = Vng.defineConfigs({
     view: {
         fitView: true,
-        // scalingObjects: true,
+        scalingObjects: true,
         layoutHandler: new Vng.GridLayout({ grid: 15 }),
     },
   node: {

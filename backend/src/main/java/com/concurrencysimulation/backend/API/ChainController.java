@@ -198,8 +198,10 @@ public class ChainController {
                 Color color=machine.getCurrentProduct().getColor();
                 String hex = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
                 data.put(machine.getNode().getName(), hex);
+                System.out.println(machine.getNode().getName()+" : "+hex);
             }else{
-                data.put(machine.getNode().getName(), "white");
+                data.put(machine.getNode().getName(), "#386641");
+                System.out.println(machine.getNode().getName()+" : "+"#386641");
             }
         }
 
