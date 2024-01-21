@@ -52,6 +52,10 @@ public class ProductManager {
         return products;
     }
 
+    public void setProducts(Map<Integer, Product> products){
+        this.products = products;
+    }
+
     public Color getRandomColor() {
         int r = (int) (Math.random() * 256);
         int g = (int) (Math.random() * 256);
