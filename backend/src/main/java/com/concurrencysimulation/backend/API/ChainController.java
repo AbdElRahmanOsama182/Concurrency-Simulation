@@ -166,8 +166,9 @@ public class ChainController {
 
         // create random number of products and add them to queue with name "Start Node"
         
-        // int numberOfProducts=(int)(Math.random()*10);
-        int numberOfProducts=6;
+        int numberOfProducts=(int)(Math.random()*10);
+        // int numberOfProducts=6;
+        System.out.println("Number of productssssssssssssssssss: "+numberOfProducts);
 
         for(int i=0;i<numberOfProducts;i++){
             ProductManager.getInstance().createProduct();
@@ -211,10 +212,10 @@ public class ChainController {
                 Color color=machine.getCurrentProduct().getColor();
                 String hex = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
                 data.put(machine.getNode().getName(), hex);
-                System.out.println(machine.getNode().getName()+" : "+hex);
+                // System.out.println(machine.getNode().getName()+" : "+hex);
             }else{
                 data.put(machine.getNode().getName(), "#386641");
-                System.out.println(machine.getNode().getName()+" : "+"#386641");
+                // System.out.println(machine.getNode().getName()+" : "+"#386641");
             }
         }
 

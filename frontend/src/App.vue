@@ -247,7 +247,7 @@ export default {
               console.log(data);
               for(let node in data){
                 for(let node2 in this.nodes){
-                  console.log(this.nodes[node2].name, node);
+                  // console.log(this.nodes[node2].name, node);
                   if(this.nodes[node2].name=== node && this.nodes[node2].type === "machine"){
                     this.nodes[node2].color = data[node];
                   }
