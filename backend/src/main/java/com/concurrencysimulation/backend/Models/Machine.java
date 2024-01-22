@@ -8,6 +8,7 @@ import com.concurrencysimulation.backend.Models.Product;
 import com.concurrencysimulation.backend.Models.Node;
 
 
+
 public class Machine extends Thread implements Observable {
     private int machineId;
     private Product currentProduct; // Product that is currently being processed
@@ -82,12 +83,14 @@ public class Machine extends Thread implements Observable {
                         // } catch (InterruptedException e) {
                         //     e.printStackTrace();
                         // }
+
                         continue;
                     }
                     System.out.println("Product " + product.getId() + " is being served in machine " + this.machineId
                             + "from machine");
                     this.setCurrentProduct(product);
                     break;
+
                 }
 
             }

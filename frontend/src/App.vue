@@ -10,6 +10,7 @@
       <button @click="AddEdge" class="adde">🔗</button>
       <button v-if="!running" @click="Run" class="run">▶️</button>
       <button v-if="running" @click="Pause" class="pause">⏸</button>
+
       <button @click="Replay" class="replay">🔄</button>
       <button @click="remove" class="delete">❌</button>
       <button @click="clear" class="clear">🗑️</button>
@@ -37,6 +38,7 @@ export default {
       edges,
       selectedNodes: sn,
       selectedEdges: se,
+
       nextMachineIndex: 2,
       nextQueueIndex: 1,
       nextNodeIndex,
@@ -146,11 +148,13 @@ export default {
       }
       for (const nodeId of this.selectedNodes) {
         if (!this.nodes[nodeId].main) {
+
           if (this.nodes[nodeId].type === 'machine') {
             this.nextMachineIndex--;
           } else if (this.nodes[nodeId].type === 'queue') {
             this.nextQueueIndex--;
           }
+
           delete this.nodes[nodeId];
         }
       }
@@ -180,6 +184,7 @@ export default {
       const nodeId = `node${nextNodeIndex.value}`;
       const name = `Q${this.nextQueueIndex}`;
       nodes[nodeId] = { name, type: 'queue', shape: 'rect', color: '#FFDF64' };
+
       this.nextQueueIndex++;
       this.nextNodeIndex++;
     },
@@ -189,6 +194,7 @@ export default {
         alert('Please pause the simulation before deleting any node or edge.');
         return;
       }
+
       if (this.selectedNodes.length !== 2) {
         alert('Please select two nodes to connect.');
         return;

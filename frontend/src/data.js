@@ -76,8 +76,6 @@ const configs = Vng.defineConfigs({
 });
 
 
-
-
 export default {
   nodes,
   edges,

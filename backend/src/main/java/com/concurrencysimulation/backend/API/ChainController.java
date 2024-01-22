@@ -3,6 +3,9 @@ package com.concurrencysimulation.backend.API;
 import java.awt.Color;
 import java.time.temporal.ChronoUnit;
 
+import java.time.temporal.ChronoUnit;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +16,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import com.concurrencysimulation.backend.Managers.MachineManager;
 import com.concurrencysimulation.backend.Managers.ProductManager;
 import com.concurrencysimulation.backend.Managers.QueueManager;
+import com.concurrencysimulation.backend.Managers.Caretaker;
+import com.concurrencysimulation.backend.Managers.MachineManager;
+import com.concurrencysimulation.backend.Managers.ProductManager;
+import com.concurrencysimulation.backend.Managers.QueueManager;
+import com.concurrencysimulation.backend.Managers.SystemMementoManager;
 import com.concurrencysimulation.backend.Models.Edge;
 import com.concurrencysimulation.backend.Models.Machine;
 import com.concurrencysimulation.backend.Models.Node;
@@ -34,12 +42,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 @CrossOrigin(origins = { "http://localhost:8081" })
 public class ChainController {
     
+
+    private SystemMementoManager systemMementoManager = new SystemMementoManager();
+    private Caretaker caretaker = Caretaker.getinstance();
+    private Map<String, Node> nodes = new HashMap<>();
+    private Map<String, Edge> edges = new HashMap<>();
+
+    
     @PostMapping("/data")
     public String submitGraph(@RequestBody Map<String, Object> payload) {
-        System.out.println("Payload:");
         System.out.println(payload);
-        Map<String, Node> nodes = new HashMap<>();
-        Map<String, Edge> edges = new HashMap<>();
         // add payload to nodes and edges maps 
         // ex edges payload    
         //  "edges":{
@@ -68,6 +80,7 @@ public class ChainController {
                     Map<String, Object> nodePayload = (Map<String, Object>) nodeEntry.getValue();
                     Node node = new Node(nodePayload.get("name").toString(), nodePayload.get("shape").toString(),
                             nodePayload.get("color").toString(), nodePayload.get("type").toString(),
+
                             Integer.parseInt(nodePayload.get("x").toString()),
                             Integer.parseInt(nodePayload.get("y").toString()));
                     nodes.put(nodeEntry.getKey(), node);
@@ -111,6 +124,7 @@ public class ChainController {
 
         Queue startQueue=null;
         // create machines and queues
+
         for (Map.Entry<String, Node> entry : nodes.entrySet()) {
             Node node = entry.getValue();
             if (node.getType().equals("machine")) {
@@ -124,6 +138,7 @@ public class ChainController {
                 queue.setNodeKey(entry.getKey());
                 mappingQueue.put(entry.getKey(),queue);
                 if(node.getName().equals("Start Queue")){
+
                     startQueue=queue;
                 }
             }
@@ -140,6 +155,7 @@ public class ChainController {
         for (Map.Entry<String, Queue> entry : mappingQueue.entrySet()) {
             System.out.println(entry.getKey() + " : " + entry.getValue().getQueueId() + " : "
                     + entry.getValue().getNode().getName());
+
         }
 
         // create edges
@@ -170,6 +186,7 @@ public class ChainController {
         // int numberOfProducts=6;
         System.out.println("Number of productssssssssssssssssss: "+numberOfProducts);
 
+
         for(int i=0;i<numberOfProducts;i++){
             ProductManager.getInstance().createProduct();
             Product product=ProductManager.getInstance().getProduct(ProductManager.getInstance().getProducts().size()-1);
@@ -189,9 +206,14 @@ public class ChainController {
             queue.start();
         }
 
+        //save system
+        caretaker.push(systemMementoManager.saveSystem());
+        System.out.println("System is saved");
+
         // run machines
         for (Machine machine : MachineManager.getInstance().getMachines().values()) {
             System.out.println("Machine " + machine.getMachineId() + " is running");
+
             machine.start();
         }
 
@@ -259,5 +281,19 @@ public class ChainController {
         payload.put("edges", edges);
         return payload;
     }
+
+    @PostMapping("/replay")
+    public Map<String, Object> replay(){
+        Map<String, Object> connection = new HashMap<>();
+        connection.put("nodes", nodes);
+        connection.put("edges", edges);
+        systemMementoManager.restoreSystem(caretaker.undo());
+        System.out.println("System is restored");
+        
+        return connection;
+        
+    }
+
+    
 
 }

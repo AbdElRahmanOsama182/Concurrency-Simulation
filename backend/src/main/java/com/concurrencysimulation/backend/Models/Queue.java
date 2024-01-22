@@ -41,6 +41,7 @@ public class Queue extends Thread implements Observer {
                 lastProduct = new Product(lastProduct.getColor(), lastProduct.getId());
                 products.remove(products.size() - 1);
                 System.out.println("2Product " + lastProduct.getId() + " is removed from queue " + this.getQueueId());
+
                 return lastProduct;
             }
             return null;

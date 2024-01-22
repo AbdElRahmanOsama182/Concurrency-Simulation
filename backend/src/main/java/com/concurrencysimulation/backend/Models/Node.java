@@ -13,10 +13,12 @@ public class Node {
     int y;
 
     public Node(String name, String shape, String color, String type, int x, int y) {
+
         this.name = name;
         this.shape = shape;
         this.color = color;
         this.type = type;
+
         this.x = x;
         this.y = y;
     }
@@ -57,6 +59,7 @@ public class Node {
         this.type = type;
     }
 
+
     
 
     public int getX() {
@@ -81,6 +84,7 @@ public class Node {
             "shape",this.shape,
             "color",this.color,
             "type",this.type
+
         );
         return node;
     }
