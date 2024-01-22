@@ -70,6 +70,7 @@ public class ProductManager {
     }
 
     public void clear() {
-        products.clear();
+        products= new HashMap<Integer, Product>();
+        nextId = 0;
     }
 }

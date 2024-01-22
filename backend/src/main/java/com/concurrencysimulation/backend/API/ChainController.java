@@ -36,6 +36,7 @@ public class ChainController {
     
     @PostMapping("/data")
     public String submitGraph(@RequestBody Map<String, Object> payload) {
+        System.out.println("Payload:");
         System.out.println(payload);
         Map<String, Node> nodes = new HashMap<>();
         Map<String, Edge> edges = new HashMap<>();
@@ -171,13 +172,25 @@ public class ChainController {
         for(int i=0;i<numberOfProducts;i++){
             ProductManager.getInstance().createProduct();
             Product product=ProductManager.getInstance().getProduct(ProductManager.getInstance().getProducts().size()-1);
+            System.out.println("Product "+product.getId()+" is created");
             startQueue.addProduct(product);
+        }
+        // print all products
+        for (Product product : startQueue.getProducts()) {
+            System.out.println("Product " + product.getId() + " of queue Start Queue " );
         }
 
         System.out.println(numberOfProducts + " Products are created");
 
+
+        for(Queue queue:QueueManager.getInstance().getQueues().values()){
+            System.out.println("Queue " + queue.getQueueId() + " is running");
+            queue.start();
+        }
+
         // run machines
         for (Machine machine : MachineManager.getInstance().getMachines().values()) {
+            System.out.println("Machine " + machine.getMachineId() + " is running");
             machine.start();
         }
 

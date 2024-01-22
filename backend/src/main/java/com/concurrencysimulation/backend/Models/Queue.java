@@ -31,8 +31,16 @@ public class Queue extends Thread implements Observer {
         synchronized (this) {
             if (products.size() > 0) {
                 System.out.println("Product size: " + products.size() + " of queue " + this.getQueueId());
+                // print all products
+                for (Product product : products) {
+                    System.out.println("Product " + product.getId() + " of queue " + this.getQueueId());
+                }
                 Product lastProduct = products.get(products.size() - 1);
+                // copy product
+                System.out.println("Product " + lastProduct.getId() + " is removed from queue " + this.getQueueId());
+                lastProduct = new Product(lastProduct.getColor(), lastProduct.getId());
                 products.remove(products.size() - 1);
+                System.out.println("2Product " + lastProduct.getId() + " is removed from queue " + this.getQueueId());
                 return lastProduct;
             }
             return null;
@@ -66,6 +74,7 @@ public class Queue extends Thread implements Observer {
     public void removeProduct(Product product) {
         products.remove(product);
     }
+
 
     public void setNode(Node node) {
         this.node = node;

@@ -68,9 +68,11 @@ public class Machine extends Thread implements Observable {
 
         this.currentProduct = null;
         while (this.currentProduct == null) {
+            System.out.println("Machine " + this.machineId + " is looking for product");
             for (Queue queue : queues) {
                 synchronized (queue) {
                     Product product = queue.getTopProduct();
+                    System.out.println("Product " + product + " is taken from queue " + queue.getQueueId());
                     if (product == null) {
                         System.out.println(
                                 "Product is null for machine " + this.machineId + " in queue " + queue.getQueueId());
