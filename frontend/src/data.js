@@ -44,7 +44,7 @@ const configs = Vng.defineConfigs({
     label: {
         fontFamily: "Arial",
         margin: 10,
-        fontSize: 20,
+        fontSize: 20
     },
     },
 

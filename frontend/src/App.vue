@@ -56,7 +56,6 @@ export default {
       const visited = {};
       this.paths = this.findAllPaths('node1', 'node2', visited, [], this.edges);
       console.log(this.paths);
-
       this.configs.path.visible = !this.configs.path.visible;
       this.running = true;
 
@@ -78,9 +77,9 @@ export default {
       for (let nodeI in this.nodes) {
         let node = this.nodes[nodeI];
         console.log(nodeI, node);
-        nodes[nodeI] = { "name": node.name, "shape": node.shape, "color": node.color, "main": node.main, "type": node.type, "x": 0, "y": 0 };
+        nodes[nodeI] = { "name": node.name.split(":")[0], "shape": node.shape, "color": node.color, "main": node.main, "type": node.type, "x": 0, "y": 0 };
       }
-
+      
       let edges = {};
       for (let edgeI in this.edges) {
         let edge = this.edges[edgeI];
@@ -251,6 +250,10 @@ export default {
                   console.log(this.nodes[node2].name, node);
                   if(this.nodes[node2].name=== node && this.nodes[node2].type === "machine"){
                     this.nodes[node2].color = data[node];
+                  }
+                  const qn = this.nodes[node2].name.split(":")[0];
+                  if(qn=== node && this.nodes[node2].type === "queue"){
+                    this.nodes[node2].name = qn + ": " + data[node];
                   }
                 }
               }
