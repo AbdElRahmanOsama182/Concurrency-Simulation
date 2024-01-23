@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 
 import java.time.temporal.ChronoUnit;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -202,14 +203,14 @@ public class ChainController {
 
         System.out.println(numberOfProducts + " Products are created");
 
+         // save system
+         caretaker.push(systemMementoManager.saveSystem());
+         System.out.println("System is saved");
+
         for (Queue queue : QueueManager.getInstance().getQueues().values()) {
             System.out.println("Queue " + queue.getQueueId() + " is running");
             queue.start();
         }
-
-        // save system
-        caretaker.push(systemMementoManager.saveSystem());
-        System.out.println("System is saved");
 
         // run machines
         for (Machine machine : MachineManager.getInstance().getMachines().values()) {
@@ -281,16 +282,34 @@ public class ChainController {
         return payload;
     }
 
-    @PostMapping("/replay")
-    public Map<String, Object> replay() {
-        Map<String, Object> connection = new HashMap<>();
-        connection.put("nodes", nodes);
-        connection.put("edges", edges);
+    @PostMapping("/restore")
+    public ResponseEntity<String> restore(){
+
+        //TODO:stop machines and queues threads
+        MachineManager.getInstance().clear();
+        // clear queues
+        QueueManager.getInstance().clear();
+        // clear products
+        ProductManager.getInstance().clear();
+
         systemMementoManager.restoreSystem(caretaker.undo());
-        System.out.println("System is restored");
 
-        return connection;
-
+        //TODO:start machines and queues threads
+        for (Queue queue : QueueManager.getInstance().getQueues().values()) {
+        System.out.println("Queue " + queue.getQueueId() + " is running");
+        queue.start();
+        
     }
+
+        // run machines
+        for (Machine machine : MachineManager.getInstance().getMachines().values()) {
+            System.out.println("Machine " + machine.getMachineId() + " is running");
+            machine.start();
+        }
+
+        return ResponseEntity.ok("System is restored");
+        
+    }
+    
 
 }

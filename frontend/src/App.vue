@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 
 export default {
   name: 'App',
@@ -134,11 +135,22 @@ export default {
       this.configs.path.visible = !this.configs.path.visible;
       this.running = false;
     },
-    Replay() {
+    async Replay() {
+      this.isRepliable = !this.isRepliable;
       if (!this.isRepliable) {
-        if (this.running) 
+        if (this.running){
           this.Pause();
-        this.Run();
+        }
+        else{
+          try{
+            const response = await axios.post('http://localhost:8080/restore');
+            console.log(response.data);
+          } catch(error){
+            console.error(error.message);
+            alert('you should play the simulation first');
+          }
+        }
+        //this.Run();
       }
     },
     remove() {
@@ -249,7 +261,7 @@ export default {
       // and update the nodes and edges
 
       setInterval(() => {
-        if (this.running) {
+        if (this.running || this.isRepliable) {
           console.log("fetchhh");
 
           fetch('http://localhost:8080/data', {
