@@ -21,7 +21,6 @@ import com.concurrencysimulation.backend.Managers.Caretaker;
 import com.concurrencysimulation.backend.Managers.MachineManager;
 import com.concurrencysimulation.backend.Managers.ProductManager;
 import com.concurrencysimulation.backend.Managers.QueueManager;
-import com.concurrencysimulation.backend.Managers.SystemMementoManager;
 import com.concurrencysimulation.backend.Models.Edge;
 import com.concurrencysimulation.backend.Models.Machine;
 import com.concurrencysimulation.backend.Models.Memento;
@@ -44,7 +43,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @CrossOrigin(origins = { "http://localhost:8081" })
 public class ChainController {
 
-    private SystemMementoManager systemMementoManager = new SystemMementoManager();
     private Caretaker caretaker = Caretaker.getinstance();
     private Map<String, Node> nodes = new HashMap<>();
     private Map<String, Edge> edges = new HashMap<>();
@@ -204,10 +202,6 @@ public class ChainController {
 
         System.out.println(numberOfProducts + " Products are created");
 
-         // save system
-        // caretaker.push(systemMementoManager.saveSystem());
-         System.out.println("System is saved");
-
         for (Queue queue : QueueManager.getInstance().getQueues().values()) {
             System.out.println("Queue " + queue.getQueueId() + " is running");
             queue.start();
@@ -290,35 +284,6 @@ public class ChainController {
         payload.put("edges", edges);
         return payload;
     }
-
-   /*  @PostMapping("/restore")
-    public ResponseEntity<String> restore(){
-
-        //TODO:stop machines and queues threads
-        MachineManager.getInstance().clear();
-        // clear queues
-        QueueManager.getInstance().clear();
-        // clear products
-        ProductManager.getInstance().clear();
-
-        systemMementoManager.restoreSystem(caretaker.undo());
-
-        //TODO:start machines and queues threads
-        for (Queue queue : QueueManager.getInstance().getQueues().values()) {
-        System.out.println("Queue " + queue.getQueueId() + " is running");
-        queue.start();
-        
-    }
-
-        // run machines
-        for (Machine machine : MachineManager.getInstance().getMachines().values()) {
-            System.out.println("Machine " + machine.getMachineId() + " is running");
-            machine.start();
-        }
-
-        return ResponseEntity.ok("System is restored");
-        
-    }*/
-    
+ 
 
 }
