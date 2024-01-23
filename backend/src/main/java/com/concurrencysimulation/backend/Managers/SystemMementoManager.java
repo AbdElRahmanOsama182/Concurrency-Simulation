@@ -30,6 +30,7 @@ public class SystemMementoManager {
         machineManager.setMachines(memento.getMachines());
         productManager.setProducts(memento.getProducts());
         queueManager.setQueues(memento.getQueues());
+
         
     }
 

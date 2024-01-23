@@ -200,15 +200,16 @@ public class ChainController {
 
         System.out.println(numberOfProducts + " Products are created");
 
+        //save system
+        caretaker.push(systemMementoManager.saveSystem());
+        System.out.println("System is saved");
+        
 
         for(Queue queue:QueueManager.getInstance().getQueues().values()){
             System.out.println("Queue " + queue.getQueueId() + " is running");
             queue.start();
         }
 
-        //save system
-        caretaker.push(systemMementoManager.saveSystem());
-        System.out.println("System is saved");
 
         // run machines
         for (Machine machine : MachineManager.getInstance().getMachines().values()) {
@@ -280,18 +281,6 @@ public class ChainController {
         payload.put("nodes", nodes);
         payload.put("edges", edges);
         return payload;
-    }
-
-    @PostMapping("/replay")
-    public Map<String, Object> replay(){
-        Map<String, Object> connection = new HashMap<>();
-        connection.put("nodes", nodes);
-        connection.put("edges", edges);
-        systemMementoManager.restoreSystem(caretaker.undo());
-        System.out.println("System is restored");
-        
-        return connection;
-        
     }
 
     

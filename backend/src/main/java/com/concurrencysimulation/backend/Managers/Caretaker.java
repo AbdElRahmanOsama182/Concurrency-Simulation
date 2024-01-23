@@ -24,7 +24,7 @@ public class Caretaker {
 
     public Memento undo(){
         if(!history.isEmpty()){
-            return history.remove(history.size() - 1);
+            return history.get(history.size() - 1);
         }
         return null;
     }
