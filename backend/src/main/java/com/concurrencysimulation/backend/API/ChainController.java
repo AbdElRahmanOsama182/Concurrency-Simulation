@@ -24,6 +24,7 @@ import com.concurrencysimulation.backend.Managers.QueueManager;
 import com.concurrencysimulation.backend.Managers.SystemMementoManager;
 import com.concurrencysimulation.backend.Models.Edge;
 import com.concurrencysimulation.backend.Models.Machine;
+import com.concurrencysimulation.backend.Models.Memento;
 import com.concurrencysimulation.backend.Models.Node;
 import com.concurrencysimulation.backend.Models.Product;
 import com.concurrencysimulation.backend.Models.Queue;
@@ -204,7 +205,7 @@ public class ChainController {
         System.out.println(numberOfProducts + " Products are created");
 
          // save system
-         caretaker.push(systemMementoManager.saveSystem());
+        // caretaker.push(systemMementoManager.saveSystem());
          System.out.println("System is saved");
 
         for (Queue queue : QueueManager.getInstance().getQueues().values()) {
@@ -218,6 +219,8 @@ public class ChainController {
 
             machine.start();
         }
+
+        caretaker.clear();
 
         return "Machines are running";
     }
@@ -244,9 +247,15 @@ public class ChainController {
         for (Queue queue : QueueManager.getInstance().getQueues().values()) {
             data.put(queue.getNode().getName(), queue.getProducts().size());
         }
-
+        caretaker.push(new Memento(data));
         return data;
     }
+
+    @GetMapping("/dataReplay")
+    public Map<String, Object> fetchGraphR() {
+       return  caretaker.getSnap().getData();
+    }
+
 
     @GetMapping("/graph")
     public Map<String, Object> fetchStructure() {
@@ -282,7 +291,7 @@ public class ChainController {
         return payload;
     }
 
-    @PostMapping("/restore")
+   /*  @PostMapping("/restore")
     public ResponseEntity<String> restore(){
 
         //TODO:stop machines and queues threads
@@ -309,7 +318,7 @@ public class ChainController {
 
         return ResponseEntity.ok("System is restored");
         
-    }
+    }*/
     
 
 }

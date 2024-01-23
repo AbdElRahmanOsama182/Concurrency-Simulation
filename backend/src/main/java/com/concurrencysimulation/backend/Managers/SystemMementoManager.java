@@ -10,7 +10,7 @@ import com.concurrencysimulation.backend.Models.Queue;
 
 public class SystemMementoManager {
     
-    private MachineManager machineManager = MachineManager.getInstance();
+   /*  private MachineManager machineManager = MachineManager.getInstance();
     private ProductManager productManager = ProductManager.getInstance();
     private QueueManager queueManager = QueueManager.getInstance();
 
@@ -31,6 +31,6 @@ public class SystemMementoManager {
         productManager.setProducts(memento.getProducts());
         queueManager.setQueues(memento.getQueues());
         
-    }
+    }*/
 
 }

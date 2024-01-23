@@ -12,16 +12,21 @@ public class Memento{
     private Map<Integer, Machine> machines = new HashMap<Integer, Machine>();
     private Map<Integer, Product> products = new HashMap<Integer, Product>();
     private Map<Integer, Queue> queues = new HashMap<Integer, Queue>();
+    Map<String, Object> data = new HashMap<>();
 
     //System connections as a graph
     /*
      * 
      */
 
-    public Memento(Map<Integer, Machine> machines, Map<Integer, Product> products, Map<Integer, Queue> queues){
+   /* public Memento(Map<Integer, Machine> machines, Map<Integer, Product> products, Map<Integer, Queue> queues){
         this.machines = machines;
         this.products = products;
         this.queues = queues;
+    }*/
+
+    public Memento(Map<String, Object> data){
+        this.data = data;
     }
 
     public Map<Integer, Machine> getMachines() {
@@ -34,6 +39,10 @@ public class Memento{
 
     public Map<Integer, Queue> getQueues() {
         return new HashMap<>(queues);
+    }
+
+    public Map<String, Object> getData() {
+        return new HashMap<>(data);
     }
 
 }

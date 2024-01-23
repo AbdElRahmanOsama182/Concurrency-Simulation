@@ -39,6 +39,7 @@ export default {
       edges,
       selectedNodes: sn,
       selectedEdges: se,
+      useReplayEndpoint: false,
 
       nextMachineIndex: 2,
       nextQueueIndex: 1,
@@ -57,6 +58,7 @@ export default {
   },
   methods: {
     Run() {
+      this.useReplayEndpoint = false;
       const visited = {};
       this.paths = this.findAllPaths('node1', 'node2', visited, [], this.edges);
       console.log(this.paths);
@@ -135,23 +137,16 @@ export default {
       this.configs.path.visible = !this.configs.path.visible;
       this.running = false;
     },
-    async Replay() {
+    Replay() {
       this.isRepliable = !this.isRepliable;
       if (!this.isRepliable) {
         if (this.running){
           this.Pause();
         }
-        else{
-          try{
-            const response = await axios.post('http://localhost:8080/restore');
-            console.log(response.data);
-          } catch(error){
-            console.error(error.message);
-            alert('you should play the simulation first');
-          }
-        }
-        //this.Run();
       }
+      this.configs.path.visible = !this.configs.path.visible;
+      this.running = true;
+      this.useReplayEndpoint = true;
     },
     remove() {
       if (this.running) {
@@ -261,10 +256,11 @@ export default {
       // and update the nodes and edges
 
       setInterval(() => {
-        if (this.running || this.isRepliable) {
+        const endpoint = this.useReplayEndpoint ? '/dataReplay' : '/data';
+        if (this.running) {
           console.log("fetchhh");
 
-          fetch('http://localhost:8080/data', {
+          fetch(`http://localhost:8080${endpoint}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
