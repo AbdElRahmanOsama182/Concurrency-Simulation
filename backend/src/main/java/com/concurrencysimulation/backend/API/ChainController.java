@@ -1,5 +1,8 @@
 package com.concurrencysimulation.backend.API;
 
+import java.awt.Color;
+import java.time.temporal.ChronoUnit;
+
 import java.time.temporal.ChronoUnit;
 
 import org.springframework.http.ResponseEntity;
@@ -10,6 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
+import com.concurrencysimulation.backend.Managers.MachineManager;
+import com.concurrencysimulation.backend.Managers.ProductManager;
+import com.concurrencysimulation.backend.Managers.QueueManager;
 import com.concurrencysimulation.backend.Managers.Caretaker;
 import com.concurrencysimulation.backend.Managers.MachineManager;
 import com.concurrencysimulation.backend.Managers.ProductManager;
@@ -36,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @CrossOrigin(origins = { "http://localhost:8081" })
 public class ChainController {
     
+
     private SystemMementoManager systemMementoManager = new SystemMementoManager();
     private Caretaker caretaker = Caretaker.getinstance();
     private Map<String, Node> nodes = new HashMap<>();
@@ -73,7 +80,7 @@ public class ChainController {
                     Map<String, Object> nodePayload = (Map<String, Object>) nodeEntry.getValue();
                     Node node = new Node(nodePayload.get("name").toString(), nodePayload.get("shape").toString(),
                             nodePayload.get("color").toString(), nodePayload.get("type").toString(),
-                            Boolean.parseBoolean(nodePayload.get("main").toString()),
+
                             Integer.parseInt(nodePayload.get("x").toString()),
                             Integer.parseInt(nodePayload.get("y").toString()));
                     nodes.put(nodeEntry.getKey(), node);
@@ -116,16 +123,22 @@ public class ChainController {
         Map<String,Queue> mappingQueue= new HashMap<>();
 
         Queue startQueue=null;
-        // create machines
+        // create machines and queues
+
         for (Map.Entry<String, Node> entry : nodes.entrySet()) {
             Node node = entry.getValue();
             if (node.getType().equals("machine")) {
                 Machine machine=MachineManager.getInstance().createMachine();
+                machine.setNode(node);
+                machine.setNodeKey(entry.getKey());
                 mappingMachine.put(entry.getKey(),machine);
             }else if(node.getType().equals("queue")){
                 Queue queue=QueueManager.getInstance().createQueue();
+                queue.setNode(node);
+                queue.setNodeKey(entry.getKey());
                 mappingQueue.put(entry.getKey(),queue);
-                if(node.getName().equals("Start Node")){
+                if(node.getName().equals("Start Queue")){
+
                     startQueue=queue;
                 }
             }
@@ -135,11 +148,14 @@ public class ChainController {
         // print mappings
         System.out.println("Mappings:");
         for (Map.Entry<String, Machine> entry : mappingMachine.entrySet()) {
-            System.out.println(entry.getKey() + " : " + entry.getValue().getMachineId());
+            System.out.println(entry.getKey() + " : " + entry.getValue().getMachineId() + " : "
+                    + entry.getValue().getNode().getName());
         }
         System.out.println("Mappings Queue:");
         for (Map.Entry<String, Queue> entry : mappingQueue.entrySet()) {
-            System.out.println(entry.getKey() + " : " + entry.getValue().getQueueId());
+            System.out.println(entry.getKey() + " : " + entry.getValue().getQueueId() + " : "
+                    + entry.getValue().getNode().getName());
+
         }
 
         // create edges
@@ -166,16 +182,29 @@ public class ChainController {
 
         // create random number of products and add them to queue with name "Start Node"
         
-        // int numberOfProducts=(int)(Math.random()*10);
-        int numberOfProducts=6;
+        int numberOfProducts=(int)(Math.random()*10);
+        // int numberOfProducts=6;
+        System.out.println("Number of productssssssssssssssssss: "+numberOfProducts);
+
 
         for(int i=0;i<numberOfProducts;i++){
             ProductManager.getInstance().createProduct();
             Product product=ProductManager.getInstance().getProduct(ProductManager.getInstance().getProducts().size()-1);
+            System.out.println("Product "+product.getId()+" is created");
             startQueue.addProduct(product);
+        }
+        // print all products
+        for (Product product : startQueue.getProducts()) {
+            System.out.println("Product " + product.getId() + " of queue Start Queue " );
         }
 
         System.out.println(numberOfProducts + " Products are created");
+
+
+        for(Queue queue:QueueManager.getInstance().getQueues().values()){
+            System.out.println("Queue " + queue.getQueueId() + " is running");
+            queue.start();
+        }
 
         //save system
         caretaker.push(systemMementoManager.saveSystem());
@@ -183,12 +212,74 @@ public class ChainController {
 
         // run machines
         for (Machine machine : MachineManager.getInstance().getMachines().values()) {
+            System.out.println("Machine " + machine.getMachineId() + " is running");
+
             machine.start();
         }
 
 
         
         return "Machines are running";
+    }
+    
+
+    @GetMapping("/data")
+    public Map<String,Object> fetchGraph(){
+        //iterate over machines and queues and create entry with key: node name and value: color of product
+        // for queue key: node name, value: number of products
+        Map<String,Object> data=new HashMap<>();
+
+        for(Machine machine:MachineManager.getInstance().getMachines().values()){
+            if(machine.getCurrentProduct()!=null){
+                Color color=machine.getCurrentProduct().getColor();
+                String hex = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
+                data.put(machine.getNode().getName(), hex);
+                // System.out.println(machine.getNode().getName()+" : "+hex);
+            }else{
+                data.put(machine.getNode().getName(), "#386641");
+                // System.out.println(machine.getNode().getName()+" : "+"#386641");
+            }
+        }
+
+        for(Queue queue:QueueManager.getInstance().getQueues().values()){
+            data.put(queue.getNode().getName(), queue.getProducts().size());
+        }
+
+        return data;
+    }
+    
+    @GetMapping("/graph")
+    public Map<String,Object> fetchStructure(){
+        Map<String,Object> payload=new HashMap<>();
+        Map<String, Object> nodes = new HashMap<>();
+        Map<String, Object> edges = new HashMap<>();
+        // add nodes to payload
+        for (Map.Entry<Integer, Machine> entry : MachineManager.getInstance().getMachines().entrySet()) {
+            Machine machine = entry.getValue();
+            Node node = machine.getNode();
+            nodes.put(machine.getNodeKey(), node.serialize());
+        }
+        for (Map.Entry<Integer, Queue> entry : QueueManager.getInstance().getQueues().entrySet()) {
+            Queue queue = entry.getValue();
+            Node node = queue.getNode();
+            nodes.put(queue.getNodeKey(), node.serialize());
+        }
+        // add edges to payload
+        for (Map.Entry<Integer, Machine> entry : MachineManager.getInstance().getMachines().entrySet()) {
+            Machine machine = entry.getValue();
+            for(Queue queue:machine.getQueues()){
+                Edge edge=new Edge(queue.getNodeKey(),machine.getNodeKey(),"#000000");
+                edges.put("edge"+machine.getMachineId()+queue.getQueueId(), edge.serialize());
+            }
+            if(machine.getTargetQueue()!=null){
+                Edge edge=new Edge(machine.getNodeKey(),machine.getTargetQueue().getNodeKey(),"#000000");
+                edges.put("edge"+machine.getMachineId()+machine.getTargetQueue().getQueueId(), edge.serialize());
+            }
+        }
+        // add nodes and edges to payload
+        payload.put("nodes", nodes);
+        payload.put("edges", edges);
+        return payload;
     }
 
     @PostMapping("/replay")

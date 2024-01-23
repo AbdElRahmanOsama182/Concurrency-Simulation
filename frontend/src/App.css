@@ -47,6 +47,7 @@ button:active {
     background: skyblue;
 
 }
+/* 
 .addm:hover::after {
     content: "  Add machine";
 }
@@ -67,7 +68,8 @@ button:active {
 }
 .clear:hover::after {
     content: "  clear";
-}
+} */
+
 
 .graph {
     width: 800px;

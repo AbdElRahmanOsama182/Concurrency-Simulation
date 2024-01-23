@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import com.concurrencysimulation.backend.Models.Queue;
 import com.concurrencysimulation.backend.Models.Product;
+import com.concurrencysimulation.backend.Models.Node;
+
 
 
 public class Machine extends Thread implements Observable {
@@ -12,11 +14,11 @@ public class Machine extends Thread implements Observable {
     private Product currentProduct; // Product that is currently being processed
     private Queue queue;
     private ArrayList<Queue> queues = new ArrayList<Queue>();
+    private Node node;
+    private String nodeKey;
 
     public Machine(int id) {
         this.machineId = id;
-        this.queue = queue;
-        this.queues = queues;
     }
 
     public int getMachineId() {
@@ -35,6 +37,22 @@ public class Machine extends Thread implements Observable {
         this.currentProduct = product;
     }
 
+    public void setNode(Node node) {
+        this.node = node;
+    }
+
+    public Node getNode() {
+        return node;
+    }
+
+    public void setNodeKey(String nodeKey) {
+        this.nodeKey = nodeKey;
+    }
+
+    public String getNodeKey() {
+        return nodeKey;
+    }
+
     public void finished() {
 
         synchronized (queue) {
@@ -51,22 +69,28 @@ public class Machine extends Thread implements Observable {
 
         this.currentProduct = null;
         while (this.currentProduct == null) {
+            // System.out.println("Machine " + this.machineId + " is looking for product");
             for (Queue queue : queues) {
+                // System.out.println("Machine " + this.machineId + " is looking for product in queue " + queue.getQueueId());
                 synchronized (queue) {
                     Product product = queue.getTopProduct();
+                    // System.out.println("Product " + product + " is taken from queue " + queue.getQueueId());
                     if (product == null) {
-                        System.out.println(
-                                "Product is null for machine " + this.machineId + " in queue " + queue.getQueueId());
-                        try {
-                            queue.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        // System.out.println(
+                        //         "Product is null for machine " + this.machineId + " in queue " + queue.getQueueId());
+                        // try {
+                        //     queue.wait();
+                        // } catch (InterruptedException e) {
+                        //     e.printStackTrace();
+                        // }
+
                         continue;
                     }
                     System.out.println("Product " + product.getId() + " is being served in machine " + this.machineId
                             + "from machine");
                     this.setCurrentProduct(product);
+                    break;
+
                 }
 
             }
@@ -93,6 +117,10 @@ public class Machine extends Thread implements Observable {
         this.queue = queue;
     }
 
+    public Queue getTargetQueue() {
+        return queue;
+    }
+
     public void addQueue(Queue queue) {
         this.queues.add(queue);
     }
@@ -102,6 +130,15 @@ public class Machine extends Thread implements Observable {
             queue.update(isFree, this);
         }
     }
+
+    public void removeQueue(Queue queue) {
+        this.queues.remove(queue);
+    }
+
+    public ArrayList<Queue> getQueues() {
+        return queues;
+    }
+
 
     public static void main(String[] args) {
 

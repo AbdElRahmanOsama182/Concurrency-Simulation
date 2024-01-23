@@ -26,7 +26,7 @@ const paths = {
 const configs = Vng.defineConfigs({
     view: {
         fitView: true,
-        // scalingObjects: true,
+        scalingObjects: true,
         layoutHandler: new Vng.GridLayout({ grid: 15 }),
     },
   node: {
@@ -44,7 +44,7 @@ const configs = Vng.defineConfigs({
     label: {
         fontFamily: "Arial",
         margin: 10,
-        fontSize: 20,
+        fontSize: 20
     },
     },
 
@@ -64,7 +64,7 @@ const configs = Vng.defineConfigs({
   },
     path: {
         selectable: false,
-        visible: true,
+        visible: false,
         normal: {
             width: 3,
             dasharray: "10 16",
@@ -75,10 +75,11 @@ const configs = Vng.defineConfigs({
     },
 });
 
+
 export default {
   nodes,
   edges,
   layouts,
   configs,
-    paths,
+  paths,
 };
