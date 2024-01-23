@@ -46,6 +46,7 @@ export default {
       configs,
       data,
       paths,
+      isRepliable: false,
       ref
     };
   },
@@ -125,7 +126,7 @@ export default {
           path.pop();
         }
       }
-
+      this.isRepliable = true;
       visited[current] = false;
       return allPaths;
     },
@@ -134,7 +135,11 @@ export default {
       this.running = false;
     },
     Replay() {
-
+      if (!this.isRepliable) {
+        if (this.running) 
+          this.Pause();
+        this.Run();
+      }
     },
     remove() {
       if (this.running) {
@@ -161,6 +166,7 @@ export default {
       for (const edgeId of this.selectedEdges) {
         delete this.edges[edgeId];
       }
+      this.isRepliable = false;
     },
     AddMachine() {
 
@@ -174,6 +180,7 @@ export default {
       nodes[nodeId] = { name, type: 'machine', shape: 'circle', color: '#386641' };
       this.nextMachineIndex++;
       this.nextNodeIndex++;
+      this.isRepliable = false;
     },
     AddQueue() {
 
@@ -187,6 +194,7 @@ export default {
 
       this.nextQueueIndex++;
       this.nextNodeIndex++;
+      this.isRepliable = false;
     },
     AddEdge() {
 
@@ -210,6 +218,7 @@ export default {
         const edgeId = `edge${this.nextEdgeIndex}`;
         this.edges[edgeId] = { source, target, color: '#000000' };
         this.nextEdgeIndex++;
+        this.isRepliable = false;
       }
       else {
         alert('Please select two nodes of different types to connect.');
@@ -217,6 +226,7 @@ export default {
     },
     clear() {
       window.location.reload();
+      this.isRepliable = false;
     },
 
 
@@ -250,11 +260,13 @@ export default {
           })
             .then(response => response.json())
             .then(data =>{
+              let done = true;
               console.log(data);
               for(let node in data){
                 for(let node2 in this.nodes){
                   // console.log(this.nodes[node2].name, node);
                   if(this.nodes[node2].name=== node && this.nodes[node2].type === "machine"){
+                    if (data[node] !== '#386641') done = false;
                     this.nodes[node2].color = data[node];
                   }
                   const qn = this.nodes[node2].name.split(":")[0];
@@ -263,6 +275,10 @@ export default {
                   }
                 }
               }
+              if(done && nodes.node1.name.split(":")[1] === " 0" && nodes.node2.name.split(":")[1] !== " 0"){
+                this.Pause();
+              }
+                
             })
             .catch((error) => {
               console.error('Error:', error);

@@ -21,11 +21,12 @@ public class ProductManager {
         return instance;
     }
 
-    public void createProduct() {
+    public Product createProduct() {
         Color color = getRandomColor();
         Product product = new Product(color, nextId);
         products.put(nextId, product);
         nextId++;
+        return product;
     }
 
     public void createProducts(int n) {
@@ -52,7 +53,7 @@ public class ProductManager {
         return products;
     }
 
-    public void setProducts(Map<Integer, Product> products){
+    public void setProducts(Map<Integer, Product> products) {
         this.products = products;
     }
 
@@ -70,7 +71,7 @@ public class ProductManager {
     }
 
     public void clear() {
-        products= new HashMap<Integer, Product>();
+        products = new HashMap<Integer, Product>();
         nextId = 0;
     }
 }
