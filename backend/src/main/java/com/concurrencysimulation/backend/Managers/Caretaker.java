@@ -7,6 +7,7 @@ import com.concurrencysimulation.backend.Models.Memento;
 public class Caretaker {
     private static Caretaker instance = null;
     private ArrayList<Memento> history = new ArrayList<Memento>();
+    private int currentIdx = -1;
 
     private Caretaker(){
     }
@@ -22,11 +23,17 @@ public class Caretaker {
         history.add(memento);
     }
 
-    public Memento undo(){
-        if(!history.isEmpty()){
-            return history.remove(history.size() - 1);
+    public Memento getSnap(){
+        if(history.isEmpty()){
+            return null;
         }
-        return null;
+        currentIdx = (currentIdx + 1) % history.size();
+            return history.get(currentIdx);
+    }
+
+    public void clear(){
+        history.clear();
+        currentIdx = -1;
     }
 
 

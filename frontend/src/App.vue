@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 
 export default {
   name: 'App',
@@ -38,6 +39,7 @@ export default {
       edges,
       selectedNodes: sn,
       selectedEdges: se,
+      useReplayEndpoint: false,
 
       nextMachineIndex: 2,
       nextQueueIndex: 1,
@@ -56,6 +58,7 @@ export default {
   },
   methods: {
     Run() {
+      this.useReplayEndpoint = false;
       const visited = {};
       this.paths = this.findAllPaths('node1', 'node2', visited, [], this.edges);
       console.log(this.paths);
@@ -135,11 +138,15 @@ export default {
       this.running = false;
     },
     Replay() {
+      this.isRepliable = !this.isRepliable;
       if (!this.isRepliable) {
-        if (this.running) 
+        if (this.running){
           this.Pause();
-        this.Run();
+        }
       }
+      this.configs.path.visible = !this.configs.path.visible;
+      this.running = true;
+      this.useReplayEndpoint = true;
     },
     remove() {
       if (this.running) {
@@ -249,10 +256,11 @@ export default {
       // and update the nodes and edges
 
       setInterval(() => {
+        const endpoint = this.useReplayEndpoint ? '/dataReplay' : '/data';
         if (this.running) {
           console.log("fetchhh");
 
-          fetch('http://localhost:8080/data', {
+          fetch(`http://localhost:8080${endpoint}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
