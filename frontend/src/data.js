@@ -13,8 +13,8 @@ const edges = {
 
 const layouts = {
   nodes: {
-    node1: { x: 300, y: 0 },
-    node2: { x: -300, y: 0 },
+    node1: { x: 500, y: 0 },
+    node2: { x: -500, y: 0 },
     node3: { x: 0, y: 150 },
   },
 };
