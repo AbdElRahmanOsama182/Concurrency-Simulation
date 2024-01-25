@@ -187,6 +187,7 @@ public class ChainController {
         // create random number of products and add them to queue with name "Start Node"
 
         int numberOfProducts = (int) (Math.random() * 10);
+        numberOfProducts += 5;
         // int numberOfProducts=6;
         System.out.println("Number of productssssssssssssssssss: " + numberOfProducts);
 
@@ -247,9 +248,8 @@ public class ChainController {
 
     @GetMapping("/dataReplay")
     public Map<String, Object> fetchGraphR() {
-       return  caretaker.getSnap().getData();
+        return caretaker.getSnap().getData();
     }
-
 
     @GetMapping("/graph")
     public Map<String, Object> fetchStructure() {
@@ -284,6 +284,5 @@ public class ChainController {
         payload.put("edges", edges);
         return payload;
     }
- 
 
 }
